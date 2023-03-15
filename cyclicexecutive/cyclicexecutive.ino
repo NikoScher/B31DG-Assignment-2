@@ -38,25 +38,27 @@ void setup() {
   for (uint8 i = 0; i < NUM_PARAMS; i++) {
     anIn[i] = 0;
   }
-  
+
   tCount = 0;
+  monitor.startMonitoring();
   ticker.attach_ms(TICK_LENGTH, cycle);
-  
-  //monitor.startMonitoring();
+  cycle();
 }
 
 void cycle() {
-  if ((tCount % TASK1_P) == 0)  task1();
-  if ((tCount % TASK2_P) == 0)  task2();
+  task1();
+  if (((tCount - TASK2_POFF1) % TASK2_P) == 0) task2();
+  if (((tCount - TASK2_POFF2) % TASK2_P) == 0) task2();
   if ((tCount % TASK3_P) == 0)  task3();
   if ((tCount % TASK4_P) == 0)  task4();
   if ((tCount % TASK5_P) == 0)  task5();
   
   tCount++;
+  if (tCount > NUM_FRAMES)  tCount = 1;
 }
 
 void task1() {
-  //monitor.jobStarted(1);
+  monitor.jobStarted(1);
   
   digitalWrite(T1_PIN, HIGH);
   delayMicroseconds(200);
@@ -66,29 +68,29 @@ void task1() {
   delayMicroseconds(30);
   digitalWrite(T1_PIN, LOW);
 
-  //monitor.jobEnded(1);
+  monitor.jobEnded(1);
 }
 
 void task2() {
-  //monitor.jobStarted(2);
+  monitor.jobStarted(2);
   
-  double period = (double) pulseIn(T2_PIN, HIGH) * 2;
+  double period = (double) pulseIn(T2_PIN, HIGH, TASK2_TIMEOUT) * 2;
   freqT2 = periodToFreq_us(period);
 
-  //monitor.jobEnded(2);
+  monitor.jobEnded(2);
 }
 
 void task3() {
-  //monitor.jobStarted(3);
+  monitor.jobStarted(3);
   
-  double period = (double) pulseIn(T3_PIN, HIGH) * 2;
+  double period = (double) pulseIn(T3_PIN, HIGH, TASK3_TIMEOUT) * 2;
   freqT3 = periodToFreq_us(period);
 
-  //monitor.jobEnded(3);
+  monitor.jobEnded(3);
 }
 
 void task4() {
-  //monitor.jobStarted(4);
+  monitor.jobStarted(4);
   
   anIn[currInd] = analogRead(T4_ANIN_PIN);
   currInd = (currInd + 1) % NUM_PARAMS;
@@ -101,11 +103,11 @@ void task4() {
 
   digitalWrite(T4_LED_PIN, (filtAnIn > TASK4_THRESH));
 
-  //monitor.jobEnded(4);
+  monitor.jobEnded(4);
 }
 
 void task5() {
-  //monitor.jobStarted(5);
+  monitor.jobStarted(5);
   
   uint8 normFreqT2 = map(freqT2, TASK2_MINFREQ, TASK2_MAXFREQ, TASK5_MIN, TASK5_MAX);
   normFreqT2 = constrain(normFreqT2, TASK5_MIN, TASK5_MAX);
@@ -115,10 +117,12 @@ void task5() {
   Serial.print(",");
   Serial.println(normFreqT3);
 
-  //monitor.jobEnded(5);
+  monitor.jobEnded(5);
 }
 
 void loop() {
+  // Debug Timing
+  /*
   int ITERS = 100;
   long int avg = 0;
   for (int i = 0; i < ITERS; i++) {
@@ -130,6 +134,6 @@ void loop() {
   avg /= ITERS;
   Serial.println();
   Serial.print(avg);
-  Serial.print("us");
-  Serial.println();
+  Serial.println("us");
+  */
 }
