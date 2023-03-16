@@ -74,7 +74,7 @@ void task1() {
 void task2() {
   monitor.jobStarted(2);
   
-  double period = (double) pulseIn(T2_PIN, HIGH, TASK2_TIMEOUT) * 2;
+  double period = (double) pulseIn(T2_PIN, HIGH) * 2;
   freqT2 = periodToFreq_us(period);
 
   monitor.jobEnded(2);
@@ -83,7 +83,7 @@ void task2() {
 void task3() {
   monitor.jobStarted(3);
   
-  double period = (double) pulseIn(T3_PIN, HIGH, TASK3_TIMEOUT) * 2;
+  double period = (double) pulseIn(T3_PIN, HIGH) * 2;
   freqT3 = periodToFreq_us(period);
 
   monitor.jobEnded(3);
@@ -109,9 +109,9 @@ void task4() {
 void task5() {
   monitor.jobStarted(5);
   
-  uint8 normFreqT2 = map(freqT2, TASK2_MINFREQ, TASK2_MAXFREQ, TASK5_MIN, TASK5_MAX);
+  int normFreqT2 = map(freqT2, TASK2_MINFREQ, TASK2_MAXFREQ, TASK5_MIN, TASK5_MAX);
   normFreqT2 = constrain(normFreqT2, TASK5_MIN, TASK5_MAX);
-  uint8 normFreqT3 = map(freqT3, TASK3_MINFREQ, TASK3_MAXFREQ, TASK5_MIN, TASK5_MAX);
+  int normFreqT3 = map(freqT3, TASK3_MINFREQ, TASK3_MAXFREQ, TASK5_MIN, TASK5_MAX);
   normFreqT3 = constrain(normFreqT3, TASK5_MIN, TASK5_MAX);
   Serial.print(normFreqT2);
   Serial.print(",");
